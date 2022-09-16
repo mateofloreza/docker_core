@@ -31,6 +31,9 @@ docker build --no-cache --force-rm -t docker_open5gs .
 
 cd ../ims_base
 docker build --no-cache --force-rm -t docker_kamailio .
+
+cd ../srslte
+docker build --no-cache --force-rm -t docker_srslte .
 ```
 
 ### Build and Run using docker-compose
@@ -42,9 +45,13 @@ source .env
 docker-compose build --no-cache
 docker-compose up
 
-# srsLTE eNB
-docker-compose -f srsenb.yaml build --no-cache
+# srsRAN eNB
 docker-compose -f srsenb.yaml up -d && docker attach srsenb
+# srsRAN ZMQ based setup
+    # eNB
+    docker-compose -f srsenb_zmq.yaml up -d && docker attach srsenb_zmq
+    # 4G UE
+    docker-compose -f srsue_zmq.yaml up -d && docker attach srsue_zmq
 ```
 
 ## Configuration
