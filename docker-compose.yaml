@@ -144,6 +144,7 @@ services:
     expose:
       - "2152/udp"
       - "8805/udp"
+      - "9091/tcp"
     cap_add:
       - NET_ADMIN
     privileged: true

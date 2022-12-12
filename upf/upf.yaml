@@ -28,6 +28,9 @@ upf:
       - addr: 2001:230:eafe::1/48
         dnn: ims
         dev: ogstun2
+    metrics:
+      - addr: UPF_IP
+        port: 9091
 
 smf:
     pfcp:
