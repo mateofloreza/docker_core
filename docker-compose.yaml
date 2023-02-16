@@ -363,7 +363,6 @@ services:
       - sgwu
       - smf
       - upf
-      - osmomsc
     container_name: mme
     env_file:
       - .env
