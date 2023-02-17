@@ -30,21 +30,28 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install updates and dependencies
 RUN apt-get update && \
-    apt-get -y install cmake git subversion software-properties-common apt-utils unzip xxd linux-headers-$(uname -r)
+    apt-get -y install cmake git subversion software-properties-common apt-utils unzip xxd linux-headers-5.15.0-1015-gkeop
 
 # Install dependencies to build SoapySDR and Lime Suite
-RUN add-apt-repository -y ppa:myriadrf/drivers && \
-    apt update && \
-    apt -y install libi2c-dev libusb-1.0-0-dev git g++ cmake libsqlite3-dev libwxgtk3.0-gtk3-dev freeglut3-dev \
-    python3-distutils gnuplot libfltk1.3-dev liboctave-dev
+#RUN add-apt-repository -y ppa:myriadrf/drivers && \
+#    apt update && \
+#    apt -y install libi2c-dev libusb-1.0-0-dev git g++ cmake libsqlite3-dev libwxgtk3.0-gtk3-dev freeglut3-dev \
+#    python3-distutils gnuplot libfltk1.3-dev liboctave-dev
+RUN apt-get install -y autoconf automake build-essential ccache cmake cpufrequtils doxygen ethtool \
+g++ git inetutils-tools libboost-all-dev libncurses5 libncurses5-dev libusb-1.0-0 libusb-1.0-0-dev \
+libusb-dev python3-dev python3-mako python3-numpy python3-requests python3-scipy python3-setuptools \
+python3-ruamel.yaml 
 
+RUN git clone https://github.com/EttusResearch/uhd.git && \
+cd uhd/ && git checkout v4.3.0.0 && cd host/ && \
+mkdir build && cd build && cmake ../ && make -j`nproc` && make install && ldconfig 
 # Install LimeSuite
-RUN git clone https://github.com/myriadrf/LimeSuite.git && \
-    cd LimeSuite && \
-    git checkout tags/v20.10.0 -b v20.10.0 && \
-    mkdir builddir && cd builddir && cmake .. && \
-    make -j`nproc` && make install && ldconfig && \
-    cd ../udev-rules && sh ./install.sh
+#RUN git clone https://github.com/myriadrf/LimeSuite.git && \
+#    cd LimeSuite && \
+#    git checkout tags/v20.10.0 -b v20.10.0 && \
+#    mkdir builddir && cd builddir && cmake .. && \
+#    make -j`nproc` && make install && ldconfig && \
+#    cd ../udev-rules && sh ./install.sh
 
 # Cloning RAN repository (eNB RAN + UE RAN)
 RUN git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git && \
@@ -54,7 +61,7 @@ RUN git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git && \
 WORKDIR openairinterface5g
 
 RUN . ./oaienv && cd cmake_targets && \
-    ./build_oai -I -w USRP --eNB --verbose-compile
+    ./build_oai -I && ./build_oai -w USRP --eNB -c
 
-CMD . ./oaienv && /mnt/oai/oai_init.sh && cd cmake_targets/lte_build_oai/build && \
-    ./lte-softmodem -O $OPENAIR_DIR/targets/PROJECTS/GENERIC-LTE-EPC/CONF/enb.band7.tm1.50PRB.usrpb210.conf -d
+#CMD . ./oaienv && /mnt/oai/oai_init.sh && cd cmake_targets/ran_build/build && \
+#    ./lte-softmodem -O $OPENAIR_DIR/targets/PROJECTS/GENERIC-LTE-EPC/CONF/enb.band7.tm1.50PRB.usrpb210.conf -d

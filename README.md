@@ -20,6 +20,25 @@ UERANSIM (gNB + UE) simulator
 	* [docker-ce](https://docs.docker.com/install/linux/docker-ce/ubuntu)
 	* [docker-compose](https://docs.docker.com/compose)
 
+Install Docker: 
+
+```
+sudo apt install -y git net-tools putty
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable"
+sudo apt update
+sudo apt install -y docker docker-ce
+
+# Add your username to the docker group, otherwise you will have to run in sudo mode.
+sudo usermod -a -G docker $(whoami)
+reboot
+
+# https://docs.docker.com/compose/install/
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+```
 
 Clone repository and build base docker image of open5gs, kamailio, ueransim
 
@@ -36,6 +55,9 @@ docker build --no-cache --force-rm -t docker_srslte .
 
 cd ../ueransim
 docker build --no-cache --force-rm -t docker_ueransim .
+
+cd ../oai
+docker build --no-cache --force-rm -t docker_oaienb .
 ```
 
 ### Build and Run using docker-compose
@@ -66,6 +88,12 @@ docker-compose -f nr-gnb.yaml up -d && docker attach nr_gnb
 
 # UERANSIM NR-UE
 docker-compose -f nr-ue.yaml up -d && docker attach nr_ue
+
+# OAI ENB
+docker-compose -f oaienb.yaml up -d && docker attach oaienb && \
+. ./oaienv && /mnt/oai/oai_init.sh && cd cmake_targets/ran_build/build && \
+./lte-softmodem -O $OPENAIR_DIR/targets/PROJECTS/GENERIC-LTE-EPC/CONF/enb.band7.tm1.50PRB.usrpb210.conf -d
+
 ```
 
 ## Configuration

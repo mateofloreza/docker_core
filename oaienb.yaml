@@ -2,7 +2,7 @@ version: '3'
 services:
   oaienb:
     build: ./oai
-    image: docker_oai
+    image: docker_oaienb
     container_name: oaienb
     stdin_open: true
     tty: true
@@ -29,4 +29,4 @@ services:
 networks:
   default:
     external:
-      name: docker_open5gs_default
+      name: docker_core_default
